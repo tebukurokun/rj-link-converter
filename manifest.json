@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "DLsite RJ Link Converter",
+  "version": "1.0",
+  "description": "RJから始まる番号を自動的にDLsiteのリンクに変換します",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [],
+  "icons": {
+  }
+}
