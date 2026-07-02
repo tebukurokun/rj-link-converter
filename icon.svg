@@ -1,0 +1,21 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4aa8ff"/>
+      <stop offset="1" stop-color="#0a5bd6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景（角丸square） -->
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="url(#bg)"/>
+
+  <!-- 鎖リンク: 2つの角丸リングを45度で連結 -->
+  <g stroke="#ffffff" stroke-width="12" fill="none" stroke-linejoin="round">
+    <!-- 左上のリング -->
+    <rect x="18" y="41" width="60" height="34" rx="17"
+          transform="rotate(-45 48 58)"/>
+    <!-- 右下のリング（左上に少し重ねて連結表現） -->
+    <rect x="50" y="53" width="60" height="34" rx="17"
+          transform="rotate(-45 80 70)"/>
+  </g>
+</svg>

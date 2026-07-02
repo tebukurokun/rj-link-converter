@@ -21,7 +21,8 @@ COMMON_FILES=(
   popup.js
   icon16.png
   icon32.png
-  icon96.png
+  icon48.png
+  icon128.png
 )
 
 # 依存ファイルの存在チェック

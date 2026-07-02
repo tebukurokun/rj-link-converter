@@ -74,8 +74,6 @@ Firefox 版は Mozilla の公式アドオンサイト（AMO）で公開してい
 
 1. Firefox で [DLsite Link Converter のアドオンページ](https://addons.mozilla.org/ja/firefox/addon/dlsite-link-converter/) を開きます。
 
-   > ※ 上記は公開予定の仮 URL です。正式公開後に確定 URL へ差し替えてください。
-
 2. 「**Firefox へ追加**」ボタンをクリックします。
 
 3. 権限の確認ダイアログが表示されたら、内容を確認して「**追加**」を押します。

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DLsite Link Converter",
-  "version": "1.1",
+  "version": "1.2",
   "description": "DLsiteの作品番号（RJ/RE/VJ/BJ）をリンクに変換し、クリック履歴をブラウザ内に記録します",
   "content_scripts": [
     {
@@ -30,6 +30,7 @@
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
-    "96": "icon96.png"
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }
