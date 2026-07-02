@@ -1,4 +1,4 @@
-# RJ Link Converter
+# DLsite Link Converter
 
 ## 機能
 
@@ -11,7 +11,7 @@
 
 ## インストール方法
 
-本拡張機能はChromeウェブストアには公開していません。以下の手順でソースコードから直接インストールしてください。Chrome / Edge / Brave / Opera / Vivaldi などの Chromium 系ブラウザに対応しています。
+本拡張機能はChromeウェブストアには公開していません。以下の手順でソースコードから直接インストールしてください。Chrome / Edge / Brave / Opera / Vivaldi などの Chromium 系ブラウザに加え、**Firefox** にも対応しています（Firefox での読み込み手順は後述の「[Firefox で使う場合](#firefox-で使う場合)」を参照してください）。
 
 1. このリポジトリを入手します。次のいずれかの方法で取得してください。
 
@@ -68,6 +68,24 @@
 
 なお、バージョンによっては新しい権限（クリック履歴機能で使用する保存領域や DLsite へのアクセスなど）が追加されることがあります。その場合はブラウザが権限の再許可を求めることがあるため、表示された内容を確認して許可してください。
 
+### Firefox で使う場合
+
+Firefox 版は Mozilla の公式アドオンサイト（AMO）で公開しています。以下の手順でインストールしてください。デスクトップ版・Android 版の Firefox どちらにも対応しています。
+
+1. Firefox で [DLsite Link Converter のアドオンページ](https://addons.mozilla.org/ja/firefox/addon/dlsite-link-converter/) を開きます。
+
+   > ※ 上記は公開予定の仮 URL です。正式公開後に確定 URL へ差し替えてください。
+
+2. 「**Firefox へ追加**」ボタンをクリックします。
+
+3. 権限の確認ダイアログが表示されたら、内容を確認して「**追加**」を押します。
+
+4. アドオン一覧に「DLsite Link Converter」が表示されればインストール完了です。任意のページを開くとRJ番号が自動的にリンクに変換されます。
+
+Android 版の Firefox でも、同じアドオンページから「Firefox へ追加」でインストールできます。クリック履歴の画面は、Android では「**⋮ メニュー → 拡張機能**」から開けます。
+
+> **開発版を試したい・自分でビルドしたい場合**: ソースコードから配布用 ZIP を作成して読み込むこともできます。手順は後述の「[開発者向け: AMO への公開](#開発者向け-amo-への公開)」を参照してください。
+
 ## プライバシー・安全性について
 
 - **ページの読み取り**: 表示中のページの文字を読み取り、RJ番号を探してDLsiteへのリンクに変換します。読み取った内容をどこかに保存・送信することはありません。
@@ -80,6 +98,36 @@
 
 - ブラウザ右上のツールバーにある本拡張機能のアイコンをクリックすると、クリック履歴の一覧が表示されます。
 - 履歴を消したいときは、その画面の「**履歴を削除**」ボタンを押してください。すべての履歴がブラウザ内から削除されます。
+
+## 開発者向け: AMO への公開
+
+Firefox 版を配布・署名するための手順です。AMO（addons.mozilla.org）の利用・署名は**無料**で、登録料もかかりません。
+
+### 1. 配布用 ZIP を作成する
+
+同梱の `build.sh` を実行すると、`dist/` に Chromium 用と Firefox 用の ZIP が生成されます。Firefox 用 ZIP は `manifest.firefox.json` を `manifest.json` として同梱済みなので、手動リネームは不要です。
+
+```bash
+./build.sh
+# dist/dlsite-link-converter-chrome.zip
+# dist/dlsite-link-converter-firefox.zip
+```
+
+### 2. AMO にアップロードする
+
+1. [Firefox アカウント](https://accounts.firefox.com/) を作成し、[Developer Hub](https://addons.mozilla.org/developers/) にログインします。
+2. 「**Submit a New Add-on**」から `dist/dlsite-link-converter-firefox.zip` をアップロードします。
+3. 配布方法を選びます。
+   - **On this site（listed）**: AMO 上で一般公開。誰でも検索・インストールでき、自動更新も有効になります。
+   - **On your own（unlisted / self-distribution）**: 公開せず、署名済みファイルだけを受け取って自分で配布します。
+4. 自動審査を通ると署名されます（多くの場合すぐ完了しますが、内容によっては手動審査で時間がかかることがあります）。
+
+### 3. 署名済みファイルのインストール
+
+- **listed で公開した場合**: 公開された AMO のページから通常どおりインストールできます。
+- **unlisted の場合**: 署名済みの `.xpi` ファイルがダウンロードできるので、それを Firefox にドラッグ＆ドロップするか `about:addons` から読み込みます。
+
+> **メモ**: `manifest.firefox.json` の `browser_specific_settings.gecko.id` は `dlsite-link-converter@tebukuro.me` を使用しています。この ID は AMO で拡張機能を一意に識別するためのもので、**一度公開すると変更できません**。`strict_min_version` は対応させたい Firefox の下限バージョンに応じて調整できます。
 
 ## 免責事項
 - このプログラムの利用によって生じたいかなる損害についても、作成者は責任を負いません。
