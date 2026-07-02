@@ -5,7 +5,7 @@
 
   // 設定オブジェクト
   const CONFIG = {
-    RJ_PATTERN: /\bRJ(\d{6,})\b/g,
+    RJ_PATTERN: /\bRJ\d{6,}\b/g,
     DLSITE_BASE_URL: "https://www.dlsite.com/maniax/work/=/product_id/",
     PROCESSED_CLASS: "dlsite-rj-converted",
     EXCLUDED_TAGS: ["A", "SCRIPT", "STYLE", "NOSCRIPT"],
@@ -14,8 +14,8 @@
       textDecoration: "underline",
     },
     DELAYS: {
-      INITIAL_PROCESS: 500,
-      MUTATION_PROCESS: 100,
+      // 動的に追加されたノードをまとめて処理するためのデバウンス時間
+      MUTATION_DEBOUNCE: 200,
     },
   };
 
@@ -43,7 +43,8 @@
     const text = textNode.textContent;
 
     // RJ番号が含まれているかチェック
-    if (!CONFIG.RJ_PATTERN.test(text)) {
+    // （グローバル正規表現の lastIndex を汚さない search を使用）
+    if (text.search(CONFIG.RJ_PATTERN) === -1) {
       return false;
     }
 
@@ -78,12 +79,8 @@
       const text = textNode.textContent;
       const fragment = document.createDocumentFragment();
       let lastIndex = 0;
-      let match;
 
-      // パターンをリセット
-      CONFIG.RJ_PATTERN.lastIndex = 0;
-
-      while ((match = CONFIG.RJ_PATTERN.exec(text)) !== null) {
+      for (const match of text.matchAll(CONFIG.RJ_PATTERN)) {
         // マッチ前のテキストを追加
         if (match.index > lastIndex) {
           fragment.appendChild(
@@ -94,7 +91,7 @@
         // リンク要素を作成して追加
         const rjNumber = match[0];
         fragment.appendChild(createRJLink(rjNumber));
-        lastIndex = CONFIG.RJ_PATTERN.lastIndex;
+        lastIndex = match.index + rjNumber.length;
       }
 
       // 残りのテキストを追加
@@ -176,18 +173,36 @@
       return;
     }
 
+    // 追加されたノードをバッファし、デバウンスしてまとめて処理する
+    let pendingNodes = new Set();
+    let debounceTimer = null;
+
+    const flush = () => {
+      debounceTimer = null;
+      const nodes = pendingNodes;
+      pendingNodes = new Set();
+
+      // 親が同じバッチ内の別ノードに含まれる場合は重複処理を避ける
+      for (const node of nodes) {
+        if (!node.isConnected) {
+          continue;
+        }
+        processTextNodes(node);
+      }
+    };
+
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            // 新しく追加された要素を処理
-            setTimeout(
-              () => processTextNodes(node),
-              CONFIG.DELAYS.MUTATION_PROCESS
-            );
+            pendingNodes.add(node);
           }
-        });
-      });
+        }
+      }
+
+      if (pendingNodes.size > 0 && debounceTimer === null) {
+        debounceTimer = setTimeout(flush, CONFIG.DELAYS.MUTATION_DEBOUNCE);
+      }
     });
 
     observer.observe(document.body, {
@@ -208,11 +223,9 @@
     };
 
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(processAndObserve, CONFIG.DELAYS.INITIAL_PROCESS);
-      });
+      document.addEventListener("DOMContentLoaded", processAndObserve);
     } else {
-      setTimeout(processAndObserve, CONFIG.DELAYS.INITIAL_PROCESS);
+      processAndObserve();
     }
   }
 
