@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>クリック履歴</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        width: 360px;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+      }
+      header h1 {
+        font-size: 14px;
+        margin: 0;
+      }
+      #clear {
+        font-size: 12px;
+        padding: 4px 8px;
+        cursor: pointer;
+        border: 1px solid rgba(128, 128, 128, 0.4);
+        border-radius: 4px;
+        background: transparent;
+        color: inherit;
+      }
+      #clear:hover {
+        background: rgba(128, 128, 128, 0.15);
+      }
+      #list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 420px;
+        overflow-y: auto;
+      }
+      #list li {
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+      }
+      .title {
+        display: block;
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 2px;
+        word-break: break-word;
+      }
+      .title:hover {
+        text-decoration: underline;
+      }
+      .meta {
+        color: rgba(128, 128, 128, 0.9);
+        font-size: 11px;
+      }
+      .meta .rj {
+        font-weight: 600;
+      }
+      .source {
+        display: block;
+        color: rgba(128, 128, 128, 0.9);
+        font-size: 11px;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #empty {
+        padding: 24px 12px;
+        text-align: center;
+        color: rgba(128, 128, 128, 0.9);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>クリック履歴</h1>
+      <button id="clear">履歴を削除</button>
+    </header>
+    <ul id="list"></ul>
+    <div id="empty" hidden>まだ履歴はありません</div>
+    <script src="popup.js"></script>
+  </body>
+</html>

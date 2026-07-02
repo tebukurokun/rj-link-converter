@@ -20,6 +20,25 @@
   };
 
   /**
+   * クリック履歴を background（Service Worker）へ送信する。
+   * ページ遷移で失敗することがあるため、例外は握りつぶす。
+   */
+  function recordClick(rjNumber, url) {
+    try {
+      chrome.runtime.sendMessage({
+        type: "recordClick",
+        rjNumber,
+        url,
+        pageUrl: location.href,
+        pageTitle: document.title,
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      // 拡張機能のリロード直後などで runtime が無効な場合は無視
+    }
+  }
+
+  /**
    * RJ番号用のリンク要素を作成
    */
   function createRJLink(rjNumber) {
@@ -32,6 +51,15 @@
 
     // スタイルを適用
     Object.assign(link.style, CONFIG.LINK_STYLES);
+
+    // SNS（Twitter/X など）ではツイートカード全体にクリックイベントが
+    // 設定されており、リンクをクリックすると親要素のクリック（詳細を開く等）も
+    // 発火してしまう。イベントの伝播を止めて通常のリンクと同じ挙動にする。
+    // あわせてクリック履歴を background（Service Worker）へ記録する。
+    link.addEventListener("click", (event) => {
+      event.stopPropagation();
+      recordClick(rjNumber, link.href);
+    });
 
     return link;
   }
