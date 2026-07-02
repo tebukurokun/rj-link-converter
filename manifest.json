@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "DLsite RJ Link Converter",
   "version": "1.0",
-  "description": "RJから始まる番号をDLsiteのリンクに変換し、クリック履歴をブラウザ内に記録します",
+  "description": "DLsiteの作品番号（RJ/RE/VJ/BJ）をリンクに変換し、クリック履歴をブラウザ内に記録します",
   "content_scripts": [
     {
       "matches": [

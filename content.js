@@ -3,9 +3,19 @@
 (function () {
   "use strict";
 
+  // 対応する DLsite の作品番号プレフィックス。
+  // RJ:同人 / RE:同人(海外向け) / VJ:美少女ゲーム・PCソフト / BJ:電子書籍・商業。
+  // DLSITE_BASE_URL は maniax 固定で問題ない。DLsite 側が product_id に応じて
+  // 正しいサイト（soft / books / ecchi-eng など）へ自動リダイレクトするため。
+  const DLSITE_PREFIXES = ["RJ", "RE", "VJ", "BJ"];
+
   // 設定オブジェクト
   const CONFIG = {
-    RJ_PATTERN: /\bRJ\d{6,}\b/g,
+    // 例: /\b(?:RJ|RE|VJ|BJ)\d{6,}\b/g
+    PRODUCT_PATTERN: new RegExp(
+      `\\b(?:${DLSITE_PREFIXES.join("|")})\\d{6,}\\b`,
+      "g"
+    ),
     DLSITE_BASE_URL: "https://www.dlsite.com/maniax/work/=/product_id/",
     PROCESSED_CLASS: "dlsite-rj-converted",
     EXCLUDED_TAGS: ["A", "SCRIPT", "STYLE", "NOSCRIPT"],
@@ -72,7 +82,7 @@
 
     // RJ番号が含まれているかチェック
     // （グローバル正規表現の lastIndex を汚さない search を使用）
-    if (text.search(CONFIG.RJ_PATTERN) === -1) {
+    if (text.search(CONFIG.PRODUCT_PATTERN) === -1) {
       return false;
     }
 
@@ -108,7 +118,7 @@
       const fragment = document.createDocumentFragment();
       let lastIndex = 0;
 
-      for (const match of text.matchAll(CONFIG.RJ_PATTERN)) {
+      for (const match of text.matchAll(CONFIG.PRODUCT_PATTERN)) {
         // マッチ前のテキストを追加
         if (match.index > lastIndex) {
           fragment.appendChild(

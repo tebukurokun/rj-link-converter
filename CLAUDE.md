@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Overview
 
 Chromium 系ブラウザ（Chrome / Edge / Brave / Opera / Vivaldi）向けの Manifest V3 拡張機能。
-任意のページ内に含まれる DLsite の作品番号（`RJ` + 6桁以上の数字）を検出し、DLsite の該当ページへのリンクへ自動変換する。
+任意のページ内に含まれる DLsite の作品番号（`RJ` / `RE` / `VJ` / `BJ` + 6桁以上の数字）を検出し、DLsite の該当ページへのリンクへ自動変換する。
 
 ## Development
 
@@ -32,7 +32,7 @@ Chromium 系ブラウザ（Chrome / Edge / Brave / Opera / Vivaldi）向けの M
 1. `init()` — DOM 準備後に `processPage()` と `setupMutationObserver()` を呼ぶ。
 2. `processPage()` → `processTextNodes()` — `TreeWalker`（`SHOW_TEXT`）でテキストノードを収集し、**逆順**に処理する（DOM 変更による走査中のインデックスずれを避けるため）。
 3. `shouldProcessTextNode()` — 変換対象の判定。`CONFIG.EXCLUDED_TAGS`（`A` / `SCRIPT` / `STYLE` / `NOSCRIPT`）内や、処理済みマーカー（`CONFIG.PROCESSED_CLASS`）を持つ要素はスキップ。**既存リンクを二重リンク化しない**のが重要な不変条件。
-4. `convertRJNumbers()` — テキストノードを `DocumentFragment` に組み直し、RJ 番号部分を `createRJLink()` のアンカーへ置換する。
+4. `convertRJNumbers()` — テキストノードを `DocumentFragment` に組み直し、作品番号部分を `createRJLink()` のアンカーへ置換する。
 5. `setupMutationObserver()` — SPA など動的に追加されるノードを監視。`MUTATION_DEBOUNCE`（200ms）でバッチ化し、切断済みノード（`!node.isConnected`）はスキップする。
 
 ### クリック履歴（background / popup）
@@ -45,5 +45,6 @@ Chromium 系ブラウザ（Chrome / Edge / Brave / Opera / Vivaldi）向けの M
 ### 注意すべき点
 
 - 生成リンクは `click` イベントで `stopPropagation()` を呼ぶ。これは SNS（Twitter/X 等）でツイートカード全体のクリックイベント（詳細を開く等）が同時発火するのを防ぎ、通常リンクと同じ挙動にするため。同種の問題が別イベント（`mousedown` 等）で起きる場合は同様の対応が必要になりうる。同じ `click` ハンドラ内で履歴記録も行っている。
-- `CONFIG.RJ_PATTERN` はグローバル正規表現のため `lastIndex` を持つ。判定には `lastIndex` を汚さない `String.prototype.search` を、抽出には `matchAll` を使い分けている。
-- `manifest.json` の `permissions` は空。新たにブラウザ API を使う場合はここへの追加が必要。
+- 対応プレフィックスは `content.js` 冒頭の `DLSITE_PREFIXES`（`RJ` / `RE` / `VJ` / `BJ`）配列で定義し、そこから `CONFIG.PRODUCT_PATTERN` を動的生成する。追加したい場合はこの配列に足すだけでよい。`DLSITE_BASE_URL` は maniax 固定でよく、DLsite 側が product_id に応じて正しいサイト（soft / books / ecchi-eng 等）へ 301 リダイレクトする。タイトル取得 API（maniax の `product.json`）も全プレフィックス共通で動作する。
+- `CONFIG.PRODUCT_PATTERN` はグローバル正規表現のため `lastIndex` を持つ。判定には `lastIndex` を汚さない `String.prototype.search` を、抽出には `matchAll` を使い分けている。
+- `manifest.json` の `permissions` は `storage`、`host_permissions` は `https://www.dlsite.com/*`（タイトル取得の fetch 用）。新たにブラウザ API や外部ドメインを使う場合はここへの追加が必要。
